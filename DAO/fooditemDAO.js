@@ -1,28 +1,16 @@
-const supabase = require("../config/supabase");
-
-// Định nghĩa class FoodItem
-class FoodItem {
-  constructor({ id, name, description, price }) {
-    this.id = id;
-    this.name = name;
-    this.description = description;
-    this.price = price;
-  }
-}
+// const supabase = require("../config/supabase");
+const FoodItem = require("../models/fooditem");
 
 class FooditemDAO {
   // Hàm lấy tất cả food item
   async getAllFoodItem() {
-    const { data, error } = await supabase
-      .from("fooditem")
-      .select("id, name, description, price");
-
-    if (error) {
+    try {
+      // Sử dụng MongoDB để truy vấn dữ liệu
+      return await FoodItem.find({}).exec();
+    } catch (error) {
+      console.log(error);
       throw error;
     }
-
-    // Chuyển đổi dữ liệu thành mảng các đối tượng FoodItem
-    return data.map((item) => new FoodItem(item));
   }
 }
 
