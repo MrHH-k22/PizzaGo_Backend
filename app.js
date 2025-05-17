@@ -1,5 +1,5 @@
 const express = require("express");
-const connectDB = require("./config/db");
+const database = require("./config/db");
 const fooditemRoute = require("./routes/fooditem.route.js");
 const helmet = require("helmet");
 const app = express();
@@ -17,7 +17,8 @@ app.use(
 
 app.use("/public", express.static(path.join(__dirname, "public")));
 
-connectDB();
+// Không cần gọi connectDB() vì kết nối đã được thiết lập khi import
+
 app.get("/", (req, res) => {
   res.send("Hello World!");
 });
