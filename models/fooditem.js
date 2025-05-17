@@ -3,9 +3,15 @@ const { Schema } = mongoose;
 
 const foodItemSchema = new Schema(
   {
+    name: { type: String, required: true },
     description: { type: String, required: true },
-    name: { type: Number, required: true },
     price: { type: Number, required: true },
+    image: { type: String },
+    category: {
+      type: Schema.Types.ObjectId,
+      ref: "Category",
+      required: true,
+    },
   },
   { timestamps: true }
 );
