@@ -1,11 +1,11 @@
 const { Account } = require("../models/account");
+const AccountDAO = require("../DAO/accountDAO");
 const jwt = require("jsonwebtoken");
 const { generateAccessToken, generateRefreshToken } = require("../utils/utils");
 const COOKIE_OPTIONS = require("../config/cookieOptions");
 const RefreshTokenDAO = require("../DAO/RefreshTokenDAO");
 
 module.exports.signUp = async (req, res) => {
-  console.log("Request body:", req.body);
   try {
     const userData = {
       name: req.body.fullName,
@@ -15,9 +15,14 @@ module.exports.signUp = async (req, res) => {
       Role: "Customer",
     };
 
-    const newAccount = new Account(userData);
-    await newAccount.save();
-    return res.status(201).json({ message: "Tạo tài khoản thành công" });
+    const isExist = await AccountDAO.isExist(userData.email);
+    if (isExist) {
+      return res.status(500).json({ message: "Email đã tồn tại" });
+    } else {
+      const newAccount = new Account(userData);
+      await newAccount.save();
+      return res.status(201).json({ message: "Tạo tài khoản thành công" });
+    }
   } catch (err) {
     console.error("Signup error:", err);
     return res.status(500).json({ error: err.message });
