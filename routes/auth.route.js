@@ -7,7 +7,7 @@ router.route("/signUp").post(authController.signUp);
 router.route("/logIn").post(authController.logIn);
 router.route("/logOut").post(authController.logOut);
 router.route("/refresh-token").post(authController.refreshToken);
-
-// router.route("/customer-endpoint")
-//   .get(authMiddleware.isLogin, authMiddleware.isCustomer, customerController.method);
+router
+  .route("/verify-access")
+  .post(authMiddleware.isLogin, authController.verifyAccess);
 module.exports = router;

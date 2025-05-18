@@ -4,23 +4,23 @@ const { Account } = require("../models/account");
 // Verify user is logged in with a valid access token
 exports.isLogin = async (req, res, next) => {
   try {
-    // Get token from cookies or Authorization header
+    // Safely access cookies object
+    const cookies = req.cookies || {};
     const token =
-      req.cookies.accessToken ||
+      cookies.accessToken ||
       (req.headers.authorization && req.headers.authorization.split(" ")[1]);
 
     if (!token) {
       return res.status(401).json({ message: "Bạn chưa đăng nhập" });
     }
 
-    // Verify token
     const decoded = jwt.verify(
       token,
       process.env.JWT_ACCESS_SECRET || "access_secret_key"
     );
 
-    // Find user
     const user = await Account.findById(decoded.id).select("-password");
+
     if (!user) {
       return res.status(401).json({ message: "Người dùng không tồn tại" });
     }
