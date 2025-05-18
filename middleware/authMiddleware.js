@@ -1,37 +1,61 @@
 const jwt = require("jsonwebtoken");
+const { Account } = require("../models/account");
 
-// Server-side middleware update
-module.exports.authenticateToken = (req, res, next) => {
-  const token = req.cookies.accessToken;
+// Verify user is logged in with a valid access token
+exports.isLogin = async (req, res, next) => {
+  try {
+    // Get token from cookies or Authorization header
+    const token =
+      req.cookies.accessToken ||
+      (req.headers.authorization && req.headers.authorization.split(" ")[1]);
 
-  if (!token) {
-    return res.status(401).json({ message: "Authentication required" });
-  }
-
-  jwt.verify(token, process.env.JWT_SECRET_KEY, (err, decoded) => {
-    if (err) {
-      // Check if refresh token exists before proceeding
-      if (!req.cookies.refreshToken) {
-        return res.status(401).json({ message: "No refresh token available" });
-      }
-
-      return res.status(403).json({ message: "Invalid or expired token" });
+    if (!token) {
+      return res.status(401).json({ message: "Bạn chưa đăng nhập" });
     }
-    req.user = decoded;
+
+    // Verify token
+    const decoded = jwt.verify(
+      token,
+      process.env.JWT_ACCESS_SECRET || "access_secret_key"
+    );
+
+    // Find user
+    const user = await Account.findById(decoded.id).select("-password");
+    if (!user) {
+      return res.status(401).json({ message: "Người dùng không tồn tại" });
+    }
+
+    // Attach user to request object
+    req.user = user;
     next();
-  });
+  } catch (error) {
+    if (error.name === "TokenExpiredError") {
+      return res.status(401).json({ message: "Phiên đăng nhập đã hết hạn" });
+    }
+    return res.status(401).json({ message: "Không được phép truy cập" });
+  }
 };
 
-module.exports.antiByPass = (req, res, next) => {
-  const OTPToken = req.cookies.OTPToken;
-  if (!OTPToken) {
-    return res.status(401).json({ message: "Authentication required" });
+// Check if user is a customer
+exports.isCustomer = (req, res, next) => {
+  if (req.user && req.user.role === "Customer") {
+    return next();
   }
-  jwt.verify(OTPToken, process.env.JWT_OTP_SECRET_KEY, (err, decoded) => {
-    if (err) {
-      return res.status(403).json({ message: "Invalid or expired token" });
-    }
-    req.antiByPass = decoded;
-    next();
-  });
+  return res.status(403).json({ message: "Bạn không có quyền truy cập" });
+};
+
+// Check if user is a manager
+exports.isManager = (req, res, next) => {
+  if (req.user && req.user.role === "Manager") {
+    return next();
+  }
+  return res.status(403).json({ message: "Bạn không có quyền quản lý" });
+};
+
+// Check if user is staff
+exports.isStaff = (req, res, next) => {
+  if (req.user && req.user.role === "Staff") {
+    return next();
+  }
+  return res.status(403).json({ message: "Bạn không có quyền nhân viên" });
 };

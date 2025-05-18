@@ -4,12 +4,10 @@ const authController = require("../controllers/auth.controller.js");
 const authMiddleware = require("../middleware/authMiddleware");
 
 router.route("/signUp").post(authController.signUp);
-// router.route("/logIn").post(authMiddleware.antiByPass, authController.login);
-router.route("/refreshToken").post(authController.refreshToken);
-router.route("/validateJWT").post(authController.validateJWT);
-// router.route("/checkAccount").post(authController.checkAccount);
-// router.route("/logOut").post(authController.logout);
-// router.route("/isEmailAvailable").get(authController.isEmailAvailable);
-// router.route("/checkEmailAvailable").get(authController.isEmailAvailable);
-// router.route("/identityVerification").post(authController.identityVerification);
+router.route("/logIn").post(authController.logIn);
+router.route("/logOut").post(authController.logOut);
+router.route("/refresh-token").post(authController.refreshToken);
+
+// router.route("/customer-endpoint")
+//   .get(authMiddleware.isLogin, authMiddleware.isCustomer, customerController.method);
 module.exports = router;
