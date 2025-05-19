@@ -1,6 +1,5 @@
 // const { getAllFoodItem } = require("../DAO/fooditemDAO.js");
 const FooditemDAO = require("../DAO/fooditemDAO.js");
-const CategoryDAO = require("../DAO/categoryDAO.js");
 
 module.exports.getFoodItem = async (req, res, next) => {
   try {
@@ -9,7 +8,7 @@ module.exports.getFoodItem = async (req, res, next) => {
     if (foodItems && foodItems.length > 0) {
       return res.status(200).json(foodItems);
     }
-    return res.status(404).json({ message: "Không tìm thấy món ăn nào" });
+    return res.status(404).json({ message: "Cannot find any food" });
   } catch (err) {
     return res.status(500).json({ message: "Internal Server Error" });
   }
