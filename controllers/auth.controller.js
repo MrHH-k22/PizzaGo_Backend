@@ -9,7 +9,7 @@ module.exports.signUp = async (req, res) => {
       name: req.body.fullName,
       email: req.body.email,
       password: req.body.password,
-      address: req.body.address,
+      address: req.body.address || "",
       Role: "Customer",
     };
 
