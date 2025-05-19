@@ -11,6 +11,24 @@ class FooditemDAO {
       throw error;
     }
   }
+
+  // Trong fooditemDAO.js
+  async searchFoodItems(query) {
+    try {
+      // Tìm kiếm món ăn theo tên hoặc mô tả chứa chuỗi truy vấn
+      return await FoodItem.find({
+        $or: [
+          { name: { $regex: query, $options: "i" } }, // Tìm theo tên
+          { description: { $regex: query, $options: "i" } }, // Tìm theo mô tả
+        ],
+      })
+        .populate("category")
+        .exec();
+    } catch (error) {
+      console.log(error);
+      throw error;
+    }
+  }
 }
 
 module.exports = new FooditemDAO();
