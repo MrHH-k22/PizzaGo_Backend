@@ -32,3 +32,7 @@ dump/
 
 # Misc
 *.local
+
+# Mock files
+data/
+*.json

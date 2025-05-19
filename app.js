@@ -3,6 +3,7 @@ const database = require("./config/db");
 const fooditemRoute = require("./routes/fooditem.route.js");
 const authRoute = require("./routes/auth.route.js");
 const categoryRoute = require("./routes/category.route.js");
+const orderRoute = require("./routes/order.route.js");
 const helmet = require("helmet");
 const cookieParser = require("cookie-parser"); // Add this line
 const app = express();
@@ -32,6 +33,7 @@ app.get("/", (req, res) => {
 app.use("/fooditem", fooditemRoute);
 app.use("/category", categoryRoute);
 app.use("/auth", authRoute);
+app.use("/order", orderRoute);
 
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
