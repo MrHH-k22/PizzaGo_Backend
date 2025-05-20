@@ -7,4 +7,14 @@ router
   .route("/addToCart")
   .post(authMiddleware.isLogin, cartController.addToCart);
 
+router.route("/getCart").get(authMiddleware.isLogin, cartController.getCart);
+
+router
+  .route("/updateQuantity")
+  .patch(authMiddleware.isLogin, cartController.updateQuantity);
+
+router
+  .route("/removeFromCart")
+  .post(authMiddleware.isLogin, cartController.removeFromCart);
+
 module.exports = router;

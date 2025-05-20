@@ -26,10 +26,21 @@ cartItemSchema.methods.calculateTotal = async function () {
   return 0;
 };
 
-cartItemSchema.methods.editQuantity = function (newQuantity) {
-  if (newQuantity > 0) {
-    this.quantity = newQuantity;
+cartItemSchema.methods.increaseQuantity = function (amount = 1) {
+  if (amount > 0) {
+    this.quantity += amount;
   }
+  return this;
+};
+
+cartItemSchema.methods.decreaseQuantity = function (amount = 1) {
+  if (amount > 0) {
+    this.quantity -= amount;
+    if (this.quantity < 0) {
+      this.quantity = 0; // Đảm bảo số lượng không âm
+    }
+  }
+  return this;
 };
 
 // Định nghĩa schema cho Cart
@@ -48,46 +59,22 @@ const cartSchema = new Schema(
 
 // Thêm methods cho Cart
 cartSchema.methods.addToCart = function (foodItemId, quantity = 1) {
-  try {
-    // Kiểm tra tính hợp lệ của tham số đầu vào
-    if (!foodItemId) {
-      throw new Error("FoodItemId không được để trống");
-    }
-
-    if (!Number.isInteger(quantity)) {
-      quantity = Math.floor(quantity); // Chuyển đổi thành số nguyên
-    }
-
-    // Tìm sản phẩm trong giỏ hàng
-    const existingItem = this.items.find(
-      (item) => item.foodItemId.toString() === foodItemId.toString()
-    );
-
-    if (existingItem) {
-      // Cập nhật số lượng nếu sản phẩm đã tồn tại
-      existingItem.quantity += quantity;
-
-      // Nếu số lượng <= 0, xóa sản phẩm khỏi giỏ hàng
-      if (existingItem.quantity <= 0) {
-        return this.deleteItem(foodItemId);
-      }
-    } else {
-      // Thêm sản phẩm mới nếu chưa tồn tại và số lượng > 0
-      if (quantity <= 0) {
-        throw new Error("Số lượng phải lớn hơn 0 khi thêm sản phẩm mới");
-      }
-
-      this.items.push({
-        foodItemId: foodItemId,
-        quantity: quantity,
-      });
-    }
-
-    return true; // Thành công
-  } catch (error) {
-    console.error("Lỗi trong phương thức addToCart:", error);
-    throw error; // Ném lỗi để controller có thể xử lý
+  // Kiểm tra tính hợp lệ của tham số đầu vào
+  if (!foodItemId) {
+    throw new Error("FoodItemId không được để trống");
   }
+
+  if (!Number.isInteger(quantity)) {
+    quantity = Math.floor(quantity); // Chuyển đổi thành số nguyên
+  }
+
+  // Thêm sản phẩm mới vào giỏ hàng
+  this.items.push({
+    foodItemId: foodItemId,
+    quantity: quantity,
+  });
+
+  return true;
 };
 
 cartSchema.methods.calculateTotal = async function () {
@@ -101,9 +88,9 @@ cartSchema.methods.calculateTotal = async function () {
   return total;
 };
 
-cartSchema.methods.deleteItem = function (foodItemId) {
+cartSchema.methods.deleteItem = function (itemId) {
   this.items = this.items.filter(
-    (item) => item.foodItemId.toString() !== foodItemId.toString()
+    (item) => item._id.toString() !== itemId.toString()
   );
 };
 
