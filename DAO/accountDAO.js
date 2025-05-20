@@ -29,6 +29,36 @@ class AccountDAO {
       throw error;
     }
   }
+  async getEmailById(id) {
+    try {
+      const account = await Account.findById(id);
+      return account ? account.email : null;
+    } catch (error) {
+      console.error("Error fetching email by ID:", error);
+      throw error;
+    }
+  }
+  async editUser(userData) {
+    try {
+      const { id, ...updateData } = userData;
+      const updatedAccount = await Account.findByIdAndUpdate(id, updateData, {
+        new: true,
+      });
+      return updatedAccount;
+    } catch (error) {
+      console.error("Error updating user:", error);
+      throw error;
+    }
+  }
+  async deleteUser(id) {
+    try {
+      const deletedAccount = await Account.findByIdAndDelete(id);
+      return deletedAccount;
+    } catch (error) {
+      console.error("Error deleting user:", error);
+      throw error;
+    }
+  }
 }
 
 module.exports = new AccountDAO();

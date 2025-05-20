@@ -5,5 +5,7 @@ const userController = require("../controllers/user.controller.js");
 router.route("/countByRole").post(userController.countByRole);
 router.route("/getUsers").post(userController.getUsers);
 router.route("/addUser").post(userController.addUser);
+router.route("/editUser").patch(userController.editUser);
+router.route("/deleteUser").delete(userController.deleteUser);
 module.exports = router;
 // Compare this snippet from controllers/user.controller.js:
