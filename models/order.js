@@ -13,6 +13,7 @@ const EStatus = {
 const cartItemSchema = new Schema({
   foodItemId: {
     type: Schema.Types.ObjectId,
+    ref: "FoodItem",
     required: true,
   },
   quantity: {
