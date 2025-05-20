@@ -1,4 +1,5 @@
 const { Account } = require("../models/account");
+const { Cart } = require("../models/cart");
 const AccountDAO = require("../DAO/accountDAO");
 const COOKIE_OPTIONS = require("../config/cookieOptions");
 const { generateAccessToken, generateRefreshToken } = require("../utils/utils");
@@ -17,8 +18,16 @@ module.exports.signUp = async (req, res) => {
     if (isExist) {
       return res.status(500).json({ message: "Email đã tồn tại" });
     } else {
+      //b1: tạo tài khoản
       const newAccount = new Account(userData);
       await newAccount.save();
+      //b2: tạo giỏ hàng cho tài khoản
+      const newCart = new Cart({
+        customerId: newAccount._id,
+        items: [], // Khởi tạo với mảng items rỗng
+      });
+      await newCart.save();
+
       return res.status(201).json({ message: "Tạo tài khoản thành công" });
     }
   } catch (err) {
