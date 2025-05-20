@@ -3,6 +3,7 @@ const database = require("./config/db");
 const fooditemRoute = require("./routes/fooditem.route.js");
 const authRoute = require("./routes/auth.route.js");
 const categoryRoute = require("./routes/category.route.js");
+const cartRoute = require("./routes/cart.route.js");
 const orderRoute = require("./routes/order.route.js");
 const userRoute = require("./routes/user.route.js");
 const helmet = require("helmet");
@@ -13,16 +14,14 @@ const path = require("path");
 
 const PORT = process.env.PORT || 5000;
 
-// Add cookie parser before routes
-app.use(cookieParser()); // Add this line
+app.use(cookieParser());
 
-// Add body parsing middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(
   cors({
-    origin: process.env.FRONT_END_URI, // specific origin
-    credentials: true, // allow credentials
+    origin: process.env.FRONT_END_URI,
+    credentials: true,
   })
 );
 
@@ -33,6 +32,7 @@ app.get("/", (req, res) => {
 
 app.use("/fooditem", fooditemRoute);
 app.use("/category", categoryRoute);
+app.use("/cart", cartRoute);
 app.use("/auth", authRoute);
 app.use("/order", orderRoute);
 
