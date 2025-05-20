@@ -28,6 +28,11 @@ const accountSchema = new Schema(
       type: String,
       required: true,
     },
+    address: {
+      type: String,
+      required: true,
+      trim: true,
+    },
     role: {
       type: String,
       enum: Object.values(ERole),
