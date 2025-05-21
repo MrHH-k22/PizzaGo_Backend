@@ -7,13 +7,6 @@ const { generateAccessToken, generateRefreshToken } = require("../utils/utils");
 const AccountFactory = require("../factory method/accountFactory");
 module.exports.signUp = async (req, res) => {
   try {
-    // const userData = {
-    //   name: req.body.fullName,
-    //   email: req.body.email,
-    //   password: req.body.password,
-    //   address: req.body.address || "",
-    //   role: "Customer",
-    // };
     const userData = req.body;
     const isExist = await AccountDAO.isExist(userData.email);
     if (isExist) {
