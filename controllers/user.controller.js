@@ -1,5 +1,7 @@
 const AccountDAO = require("../DAO/accountDAO");
 const { Account } = require("../models/account");
+const { Cart } = require("../models/cart");
+const AccountFactory = require("../factory method/accountFactory");
 module.exports.countByRole = async (req, res) => {
     const role = req.body.role;
     try {
@@ -37,8 +39,13 @@ module.exports.addUser = async (req, res) => {
         if (isExist) {
             return res.status(500).json({ message: "Email has existed" });
         } else {
-            const newAccount = new Account(userData);
+            const newAccount = AccountFactory.createUser(userData);
             await newAccount.save();
+            const newCart = new Cart({
+                customerId: newAccount._id,
+                items: [], // Khởi tạo với mảng items rỗng
+            });
+            await newCart.save();
             return res.status(201).json({ message: "Add user successfully" });
         }
     } catch (err) {
