@@ -3,6 +3,7 @@ const router = express.Router({ mergeParams: true });
 const userController = require("../controllers/user.controller.js");
 
 router.route("/countByRole").post(userController.countByRole);
+router.route("/getUserById").post(userController.getUserById);
 router.route("/getUsers").post(userController.getUsers);
 router.route("/addUser").post(userController.addUser);
 router.route("/editUser").patch(userController.editUser);

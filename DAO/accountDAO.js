@@ -22,7 +22,7 @@ class AccountDAO {
   async getUsers(role) {
     try {
       const query = role ? { role } : {};
-      const users = await Account.find(query)
+      const users = await Account.find(query);
       return users;
     } catch (error) {
       console.error("Error fetching users:", error);
@@ -56,6 +56,16 @@ class AccountDAO {
       return deletedAccount;
     } catch (error) {
       console.error("Error deleting user:", error);
+      throw error;
+    }
+  }
+
+  async getUserById(id) {
+    try {
+      const user = await Account.findById(id).select("-password");
+      return user;
+    } catch (error) {
+      console.error("Error fetching user by ID:", error);
       throw error;
     }
   }
