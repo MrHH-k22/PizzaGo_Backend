@@ -1,6 +1,7 @@
+// models/order.js
 const mongoose = require("mongoose");
 const { Schema } = mongoose;
-const cartItemSchema = require("./cartItem"); // Import schema đã tách
+const cartItemSchema = require("./cartItem");
 
 // Define Order Status enum according to the diagram
 const EStatus = {
@@ -8,6 +9,13 @@ const EStatus = {
   CONFIRMED: "confirmed",
   DELIVERING: "delivering",
   COMPLETED: "completed",
+};
+
+// Thêm enum cho phương thức vận chuyển
+const EShippingMethod = {
+  FAST: "Fast Delivery",
+  ECONOMY: "Economy Delivery",
+  PICKUP: "Pick up",
 };
 
 const orderSchema = new Schema(
@@ -20,6 +28,11 @@ const orderSchema = new Schema(
     deliveryAddress: {
       type: String,
       required: true,
+    },
+    shippingMethod: {
+      type: String,
+      enum: Object.values(EShippingMethod),
+      default: EShippingMethod.ECONOMY,
     },
     items: {
       type: [cartItemSchema],
@@ -35,6 +48,15 @@ const orderSchema = new Schema(
       enum: Object.values(EStatus),
       default: EStatus.PENDING,
     },
+    totalFoodPrice: {
+      type: Number,
+      required: true,
+    },
+    shippingCost: {
+      type: Number,
+      required: true,
+      default: 0,
+    },
     totalPrice: {
       type: Number,
       required: true,
@@ -43,9 +65,10 @@ const orderSchema = new Schema(
   { timestamps: true }
 );
 
+// Cập nhật createOrder để chấp nhận shippingCost từ bên ngoài
 orderSchema.statics.createOrder = function (orderData) {
-  // Tính tổng giá từ các items
-  const totalPrice = orderData.items.reduce((sum, item) => {
+  // Tính tổng giá từ các items (chỉ tiền đồ ăn)
+  const totalFoodPrice = orderData.items.reduce((sum, item) => {
     return sum + item.price * item.quantity;
   }, 0);
 
@@ -53,10 +76,13 @@ orderSchema.statics.createOrder = function (orderData) {
   const order = new this({
     customerId: orderData.customerId,
     deliveryAddress: orderData.deliveryAddress,
+    shippingMethod: orderData.shippingMethod || EShippingMethod.ECONOMY,
     items: orderData.items,
     note: orderData.note || "",
-    status: EStatus.PENDING, // Đặt status là PENDING
-    totalPrice: totalPrice,
+    status: EStatus.PENDING,
+    totalFoodPrice: totalFoodPrice,
+    shippingCost: orderData.shippingCost || 0,
+    totalPrice: totalFoodPrice + (orderData.shippingCost || 0),
   });
 
   return order;
@@ -64,8 +90,9 @@ orderSchema.statics.createOrder = function (orderData) {
 
 const Order = mongoose.model("Order", orderSchema);
 
-// Export both the model and the status enum
+// Export both the model, the status enum, and shipping method enum
 module.exports = {
   Order,
   EStatus,
+  EShippingMethod,
 };
