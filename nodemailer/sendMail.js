@@ -119,7 +119,6 @@ async function sendMail(to, type, data) {
       html: html,
     });
 
-    console.log(`Email sent to ${to}: ${info.messageId}`);
     return info;
   } catch (error) {
     console.error("Error sending email:", error);

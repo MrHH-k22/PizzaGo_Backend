@@ -17,10 +17,6 @@ class EmailNotificationObserver extends OrderStatusObserver {
 
       // Send notification email
       await sendMail(customer.email, "order-status", emailData);
-
-      console.log(
-        `Email notification sent to ${customer.email} for order ${order._id}`
-      );
     } catch (error) {
       console.error("Error sending order status notification email:", error);
     }
