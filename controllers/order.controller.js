@@ -1,4 +1,13 @@
 const OrderDAO = require("../DAO/orderDAO.js");
+const OrderStatusSubject = require("../observers/OrderStatusSubject");
+
+// Tạo một instance của Subject để sử dụng trong controller
+const statusSubject = new OrderStatusSubject();
+
+// Đăng ký observer với Subject này ở app.js sau khi khởi tạo
+module.exports.registerObserver = (observer) => {
+  statusSubject.attach(observer);
+};
 
 module.exports.getOrders = async (req, res) => {
   try {
@@ -24,10 +33,24 @@ module.exports.updateOrderStatus = async (req, res) => {
         .json({ message: "Order ID and status are required" });
     }
 
-    const updatedOrder = await OrderDAO.updateOrderStatus(orderId, status);
+    // First get the order to check previous status
+    const order = await OrderDAO.getOrderById(orderId);
+    if (!order) {
+      return res.status(404).json({ message: "Order not found" });
+    }
+
+    const prevStatus = order.status;
+
+    // Update the order status
+    const updatedOrder = await OrderDAO.updateOrderStatusById(orderId, status);
 
     if (!updatedOrder) {
       return res.status(404).json({ message: "Order not found" });
+    }
+
+    // If status actually changed, notify observers
+    if (prevStatus !== status && updatedOrder) {
+      statusSubject.notify(updatedOrder, prevStatus);
     }
 
     return res.status(200).json(updatedOrder);

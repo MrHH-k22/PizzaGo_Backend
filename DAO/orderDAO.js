@@ -20,12 +20,28 @@ class OrderDAO {
     }
   }
 
-  // Update order status
-  async updateOrderStatus(orderId, newStatus) {
+  async getOrderById(orderId) {
     try {
-      const updatedOrder = await Order.findByIdAndUpdate(
+      return await Order.findById(orderId)
+        .populate({
+          path: "customerId",
+          select: "name email", // Only include non-sensitive fields
+        })
+        .populate({
+          path: "items.foodItemId",
+          select: "name description price image",
+        });
+    } catch (error) {
+      console.log(error);
+      throw error;
+    }
+  }
+
+  async updateOrderStatusById(orderId, status) {
+    try {
+      return await Order.findByIdAndUpdate(
         orderId,
-        { status: newStatus },
+        { status },
         { new: true } // Return the updated document
       )
         .populate({
@@ -36,8 +52,6 @@ class OrderDAO {
           path: "items.foodItemId",
           select: "name description price image",
         });
-
-      return updatedOrder;
     } catch (error) {
       console.log(error);
       throw error;
