@@ -4,7 +4,7 @@ const CartDAO = require("../DAO/CartDAO");
 const AccountDAO = require("../DAO/accountDAO");
 const COOKIE_OPTIONS = require("../config/cookieOptions");
 const { generateAccessToken, generateRefreshToken } = require("../utils/utils");
-
+const AccountFactory = require("../factory method/accountFactory");
 module.exports.signUp = async (req, res) => {
   try {
     const userData = {
@@ -12,7 +12,7 @@ module.exports.signUp = async (req, res) => {
       email: req.body.email,
       password: req.body.password,
       address: req.body.address || "",
-      Role: "Customer",
+      role: "Customer",
     };
 
     const isExist = await AccountDAO.isExist(userData.email);
@@ -20,7 +20,7 @@ module.exports.signUp = async (req, res) => {
       return res.status(500).json({ message: "Email đã tồn tại" });
     } else {
       //b1: tạo tài khoản
-      const newAccount = new Account(userData);
+      const newAccount = AccountFactory.createUser(userData);
       await newAccount.save();
       //b2: tạo giỏ hàng cho tài khoản
       const newCart = new Cart({
