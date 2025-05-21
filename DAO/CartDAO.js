@@ -22,6 +22,20 @@ class CartDAO {
       throw error;
     }
   }
+  async clearCart(customerId) {
+    try {
+      // Sử dụng updateOne để set items thành mảng rỗng trực tiếp
+      const result = await Cart.updateOne(
+        { customerId: customerId },
+        { $set: { items: [] } }
+      );
+
+      return result;
+    } catch (error) {
+      console.error("Error clearing cart:", error);
+      throw error;
+    }
+  }
 }
 
 module.exports = new CartDAO();

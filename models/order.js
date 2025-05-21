@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const { Schema } = mongoose;
+const cartItemSchema = require("./cartItem"); // Import schema đã tách
 
 // Define Order Status enum according to the diagram
 const EStatus = {
@@ -7,35 +8,6 @@ const EStatus = {
   CONFIRMED: "confirmed",
   DELIVERING: "delivering",
   COMPLETED: "completed",
-};
-
-// Define the CartItem schema for order items with methods from diagram
-const cartItemSchema = new Schema({
-  foodItemId: {
-    type: Schema.Types.ObjectId,
-    ref: "FoodItem",
-    required: true,
-  },
-  quantity: {
-    type: Number,
-    required: true,
-    min: 1,
-  },
-  price: {
-    type: Number,
-    required: true,
-  },
-});
-
-// Add methods shown in diagram
-cartItemSchema.methods.calculateTotal = function () {
-  return this.quantity * this.price;
-};
-
-cartItemSchema.methods.editQuantity = function (newQuantity) {
-  if (newQuantity >= 1) {
-    this.quantity = newQuantity;
-  }
 };
 
 const orderSchema = new Schema(
@@ -70,6 +42,25 @@ const orderSchema = new Schema(
   },
   { timestamps: true }
 );
+
+orderSchema.statics.createOrder = function (orderData) {
+  // Tính tổng giá từ các items
+  const totalPrice = orderData.items.reduce((sum, item) => {
+    return sum + item.price * item.quantity;
+  }, 0);
+
+  // Tạo instance mới của Order
+  const order = new this({
+    customerId: orderData.customerId,
+    deliveryAddress: orderData.deliveryAddress,
+    items: orderData.items,
+    note: orderData.note || "",
+    status: EStatus.PENDING, // Đặt status là PENDING
+    totalPrice: totalPrice,
+  });
+
+  return order;
+};
 
 const Order = mongoose.model("Order", orderSchema);
 
