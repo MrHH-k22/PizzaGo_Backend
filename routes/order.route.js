@@ -13,4 +13,8 @@ router
     orderController.updateOrderStatus
   );
 
+router
+  .route("/create")
+  .post(authMiddleware.isLogin, orderController.createOrder);
+
 module.exports = router;

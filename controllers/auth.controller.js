@@ -1,5 +1,6 @@
 const { Account } = require("../models/account");
 const { Cart } = require("../models/cart");
+const CartDAO = require("../DAO/CartDAO");
 const AccountDAO = require("../DAO/accountDAO");
 const COOKIE_OPTIONS = require("../config/cookieOptions");
 const { generateAccessToken, generateRefreshToken } = require("../utils/utils");
@@ -26,7 +27,7 @@ module.exports.signUp = async (req, res) => {
         customerId: newAccount._id,
         items: [], // Khởi tạo với mảng items rỗng
       });
-      await newCart.save();
+      await CartDAO.saveCart(newCart);
 
       return res.status(201).json({ message: "Tạo tài khoản thành công" });
     }
@@ -83,6 +84,7 @@ module.exports.logIn = async (req, res) => {
         name: account.name,
         email: account.email,
         role: account.role,
+        address: account.address,
       },
       tokens: {
         accessToken,

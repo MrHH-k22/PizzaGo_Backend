@@ -1,47 +1,6 @@
 const mongoose = require("mongoose");
 const { Schema } = mongoose;
-
-// Định nghĩa schema cho CartItem (embedded)
-const cartItemSchema = new Schema({
-  foodItemId: {
-    type: Schema.Types.ObjectId,
-    ref: "FoodItem",
-    required: true,
-  },
-  quantity: {
-    type: Number,
-    required: true,
-    default: 1,
-    min: 1,
-  },
-});
-
-// Thêm methods cho cartItem
-cartItemSchema.methods.calculateTotal = async function () {
-  // Cần populate foodItem để lấy giá
-  await this.populate("foodItemId");
-  if (this.foodItemId && this.foodItemId.price) {
-    return this.quantity * this.foodItemId.price;
-  }
-  return 0;
-};
-
-cartItemSchema.methods.increaseQuantity = function (amount = 1) {
-  if (amount > 0) {
-    this.quantity += amount;
-  }
-  return this;
-};
-
-cartItemSchema.methods.decreaseQuantity = function (amount = 1) {
-  if (amount > 0) {
-    this.quantity -= amount;
-    if (this.quantity < 0) {
-      this.quantity = 0; // Đảm bảo số lượng không âm
-    }
-  }
-  return this;
-};
+const cartItemSchema = require("./cartItem"); // Import schema đã tách
 
 // Định nghĩa schema cho Cart
 const cartSchema = new Schema(
@@ -52,7 +11,7 @@ const cartSchema = new Schema(
       required: true,
       unique: true, // Mỗi account chỉ có một cart
     },
-    items: [cartItemSchema], // Embedding CartItems trong Cart
+    items: [cartItemSchema], // Sử dụng schema đã tách
   },
   { timestamps: true }
 );
@@ -80,10 +39,7 @@ cartSchema.methods.addToCart = function (foodItemId, quantity = 1) {
 cartSchema.methods.calculateTotal = async function () {
   let total = 0;
   for (const item of this.items) {
-    await item.populate("foodItemId");
-    if (item.foodItemId && item.foodItemId.price) {
-      total += item.quantity * item.foodItemId.price;
-    }
+    total += await item.calculateTotalAsync(); // Sử dụng phương thức async
   }
   return total;
 };
@@ -92,25 +48,6 @@ cartSchema.methods.deleteItem = function (itemId) {
   this.items = this.items.filter(
     (item) => item._id.toString() !== itemId.toString()
   );
-};
-
-cartSchema.methods.createOrder = async function (deliveryAddress, note = "") {
-  const Order = mongoose.model("Order");
-  const totalPrice = await this.calculateTotal();
-
-  const newOrder = new Order({
-    customerId: this.customerId,
-    items: this.items.map((item) => ({
-      foodItemId: item.foodItemId,
-      quantity: item.quantity,
-    })),
-    deliveryAddress,
-    note,
-    status: "pending",
-    totalPrice,
-  });
-
-  return newOrder.save();
 };
 
 const Cart = mongoose.model("Cart", cartSchema);
