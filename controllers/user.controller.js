@@ -27,13 +27,7 @@ module.exports.getUsers = async (req, res) => {
 }
 module.exports.addUser = async (req, res) => {
     try {
-        const userData = {
-            name: req.body.name,
-            email: req.body.email,
-            password: req.body.password,
-            address: req.body.address || "",
-            role: req.body.role || "Customer",
-        };
+        const userData = req.body;
         // console.log("User data:", userData);
         const isExist = await AccountDAO.isExist(userData.email);
         if (isExist) {
