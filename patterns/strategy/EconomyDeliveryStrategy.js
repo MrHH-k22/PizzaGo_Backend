@@ -1,31 +1,16 @@
-// strategies/delivery/EconomyDeliveryStrategy.js
 const DeliveryStrategy = require("./DeliveryStrategy");
 
 class EconomyDeliveryStrategy extends DeliveryStrategy {
-  calculateDeliveryCost(order) {
-    const baseDistance = this._calculateDistance(order.DeliveryAddress);
-    return baseDistance * 1.2; // Hệ số thấp hơn cho giao hàng tiết kiệm
-  }
+  calculateShippingCost(items, totalFoodPrice) {
+    // Tính tổng số lượng sản phẩm
+    const totalQuantity = items.reduce((sum, item) => sum + item.quantity, 0);
 
-  estimateDeliveryTime(order) {
-    return 60; // 60 phút
-  }
-
-  validateDeliveryInfo(address) {
-    return address && address.trim() !== "";
-  }
-
-  processDelivery(order) {
-    console.log(`Đơn hàng ${order._id} được xử lý với ưu tiên thông thường`);
-    return {
-      priority: "normal",
-      expectedTime: 60,
-      message: "Đang giao hàng tiết kiệm",
-    };
-  }
-
-  _calculateDistance(address) {
-    return 5; // Giả sử khoảng cách là 5km
+    // Áp dụng quy tắc tính phí Economy Delivery
+    if (totalQuantity > 6) {
+      return totalFoodPrice * 0.15; // 15% giá đồ ăn
+    } else {
+      return totalFoodPrice * 0.1; // 10% giá đồ ăn
+    }
   }
 }
 

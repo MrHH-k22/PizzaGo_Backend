@@ -1,5 +1,4 @@
 const { Order } = require("../models/order");
-const { createDeliveryStrategy } = require("../patterns/strategy");
 
 class OrderDAO {
   // Get all orders with customer information

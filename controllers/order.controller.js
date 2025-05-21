@@ -2,6 +2,7 @@ const CartDAO = require("../DAO/CartDAO.js");
 const OrderDAO = require("../DAO/orderDAO.js");
 const { Order } = require("../models/order.js");
 const OrderStatusSubject = require("../observers/OrderStatusSubject");
+const { createDeliveryStrategy } = require("../patterns/strategy/index.js");
 
 // Tạo một instance của Subject để sử dụng trong controller
 const statusSubject = new OrderStatusSubject();
@@ -62,11 +63,9 @@ module.exports.updateOrderStatus = async (req, res) => {
   }
 };
 
-// controllers/order.controller.js - Add createOrder method
-
 module.exports.createOrder = async (req, res) => {
   try {
-    const { deliveryAddress, items, note } = req.body;
+    const { deliveryAddress, items, note, shippingMethod } = req.body;
     const customerId = req.user._id;
 
     // Validate các trường bắt buộc
@@ -82,16 +81,34 @@ module.exports.createOrder = async (req, res) => {
       price: item.foodItemId.price,
     }));
 
+    // Tính tổng giá từ các items
+    const totalFoodPrice = formattedItems.reduce((sum, item) => {
+      return sum + item.price * item.quantity;
+    }, 0);
+
+    // Sử dụng factory để tạo strategy phù hợp
+    const deliveryStrategy = createDeliveryStrategy(shippingMethod);
+
+    // Tính phí vận chuyển với strategy được chọn
+    const shippingCost = deliveryStrategy.calculateShippingCost(
+      formattedItems,
+      totalFoodPrice
+    );
+
+    // Tạo order instance với phí vận chuyển đã tính
     const orderInstance = Order.createOrder({
       customerId,
       deliveryAddress,
+      shippingMethod,
       items: formattedItems,
       note,
+      shippingCost,
     });
 
-    // Lưu instance bằng DAO
+    // Lưu order
     const savedOrder = await OrderDAO.saveOrder(orderInstance);
 
+    // Xóa giỏ hàng sau khi tạo đơn hàng thành công
     await CartDAO.clearCart(customerId);
 
     return res.status(201).json(savedOrder);
