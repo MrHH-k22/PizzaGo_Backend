@@ -8,7 +8,7 @@ const orderRoute = require("./routes/order.route.js");
 const userRoute = require("./routes/user.route.js");
 const helmet = require("helmet");
 const cookieParser = require("cookie-parser"); // Add this line
-const OrderDAO = require("./DAO/orderDAO");
+const orderController = require("./controllers/order.controller");
 const EmailNotificationObserver = require("./observers/EmailNotificationObserver");
 const app = express();
 const cors = require("cors");
@@ -42,7 +42,7 @@ app.use("/user", userRoute);
 
 // Set up observers
 const emailObserver = new EmailNotificationObserver();
-OrderDAO.registerObserver(emailObserver);
+orderController.registerObserver(emailObserver);
 
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);

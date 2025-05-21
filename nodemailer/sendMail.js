@@ -13,7 +13,6 @@ const transporter = nodemailer.createTransport({
 async function sendMail(to, type, data) {
   let subject = "Announcement from PizzaGo";
   let html = "";
-  console.log("Sending data:", data);
 
   // Generate email content based on type
   switch (type) {
