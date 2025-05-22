@@ -1,4 +1,5 @@
 const { Account } = require("../models/account");
+const bcrypt = require("bcrypt");
 
 class AccountDAO {
   async isExist(email) {
@@ -66,6 +67,21 @@ class AccountDAO {
       return user;
     } catch (error) {
       console.error("Error fetching user by ID:", error);
+      throw error;
+    }
+  }
+
+  async changePassword(id, newPassword) {
+    try {
+      const hashedPassword = await bcrypt.hash(
+        newPassword,
+        parseInt(process.env.BCRYPT_SALT || "10")
+      );
+      await Account.findByIdAndUpdate(id, {
+        password: hashedPassword,
+      });
+    } catch (error) {
+      console.error("Error changing password:", error);
       throw error;
     }
   }

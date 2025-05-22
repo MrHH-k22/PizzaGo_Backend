@@ -98,3 +98,38 @@ module.exports.getUserById = async (req, res) => {
     return res.status(500).json({ error: err.message });
   }
 };
+module.exports.changePassword = async (req, res) => {
+  try {
+    const { userId, newPassword } = req.body;
+
+    // Validate input
+    if (!userId || !newPassword) {
+      return res
+        .status(400)
+        .json({ message: "User ID and new password are required" });
+    }
+
+    // Find the user
+    const User = await AccountDAO.getUserById(userId);
+    if (!User) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // Security check: Ensure users can only change their own password
+    if (
+      req.user._id.toString() !== userId.toString() ||
+      req.user._id.toString() !== User._id.toString()
+    ) {
+      return res.status(403).json({
+        message: "You are not authorized to change this user's password",
+      });
+    }
+
+    // Change password and save
+    await AccountDAO.changePassword(userId, newPassword);
+    return res.status(200).json({ message: "Password changed successfully" });
+  } catch (err) {
+    console.error("Change password error:", err);
+    return res.status(500).json({ error: err.message });
+  }
+};
