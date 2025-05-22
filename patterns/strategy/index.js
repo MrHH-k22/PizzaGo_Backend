@@ -1,6 +1,6 @@
 // patterns/strategy/index.js
-const EconomyDeliveryStrategy = require("./EconomyDeliveryStrategy");
 const FastDeliveryStrategy = require("./FastDeliveryStrategy");
+const EconomyDeliveryStrategy = require("./EconomyDeliveryStrategy");
 const PickupStrategy = require("./PickUpStrategy");
 
 // Enum cho các phương thức vận chuyển

@@ -65,9 +65,27 @@ const orderSchema = new Schema(
   { timestamps: true }
 );
 
-// Cập nhật createOrder để chấp nhận shippingCost từ bên ngoài
+// Strategy pattern implementation - Method để thiết lập chiến lược vận chuyển
+orderSchema.methods.setDeliveryStrategy = function (deliveryStrategy) {
+  this.deliveryStrategy = deliveryStrategy;
+  return this; // Hỗ trợ method chaining
+};
+
+// Method để tính phí vận chuyển sử dụng strategy hiện tại
+orderSchema.methods.calculateShippingCost = function () {
+  if (!this.deliveryStrategy) {
+    throw new Error("Delivery strategy not set");
+  }
+
+  return this.deliveryStrategy.calculateShippingCost(
+    this.items,
+    this.totalFoodPrice
+  );
+};
+
+// Static method để tạo order với strategy pattern
 orderSchema.statics.createOrder = function (orderData) {
-  // Tính tổng giá từ các items (chỉ tiền đồ ăn)
+  // Tính tổng giá từ các items
   const totalFoodPrice = orderData.items.reduce((sum, item) => {
     return sum + item.price * item.quantity;
   }, 0);
@@ -81,9 +99,23 @@ orderSchema.statics.createOrder = function (orderData) {
     note: orderData.note || "",
     status: EStatus.PENDING,
     totalFoodPrice: totalFoodPrice,
-    shippingCost: orderData.shippingCost || 0,
-    totalPrice: totalFoodPrice + (orderData.shippingCost || 0),
+    shippingCost: 0, // Sẽ được tính sau bằng strategy
+    totalPrice: 0, // Sẽ được tính sau khi có phí vận chuyển
   });
+
+  // Import strategy factory tại đây để tránh circular dependencies
+  const { createDeliveryStrategy } = require("../patterns/strategy");
+
+  // Thiết lập strategy dựa trên phương thức vận chuyển
+  const deliveryStrategy = createDeliveryStrategy(orderData.shippingMethod);
+  order.setDeliveryStrategy(deliveryStrategy);
+
+  // Tính phí vận chuyển sử dụng strategy
+  const shippingCost = order.calculateShippingCost();
+
+  // Cập nhật order với phí vận chuyển và tổng giá
+  order.shippingCost = shippingCost;
+  order.totalPrice = totalFoodPrice + shippingCost;
 
   return order;
 };
