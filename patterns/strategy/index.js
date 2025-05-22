@@ -1,27 +1,31 @@
-// strategies/delivery/index.js
-const DeliveryStrategy = require("./DeliveryStrategy");
+// patterns/strategy/index.js
 const FastDeliveryStrategy = require("./FastDeliveryStrategy");
 const EconomyDeliveryStrategy = require("./EconomyDeliveryStrategy");
-const PickUpStrategy = require("./PickupStrategy");
+const PickupStrategy = require("./PickUpStrategy");
 
-// Factory function để tạo strategy dựa vào type
-function createDeliveryStrategy(type) {
-  switch (type) {
-    case "FAST":
+// Enum cho các phương thức vận chuyển
+const DELIVERY_METHODS = {
+  FAST: "Fast Delivery",
+  ECONOMY: "Economy Delivery",
+  PICKUP: "Pick up",
+};
+
+// Factory function để tạo strategy phù hợp
+function createDeliveryStrategy(deliveryMethod) {
+  switch (deliveryMethod) {
+    case DELIVERY_METHODS.FAST:
       return new FastDeliveryStrategy();
-    case "ECONOMY":
+    case DELIVERY_METHODS.ECONOMY:
       return new EconomyDeliveryStrategy();
-    case "PICKUP":
-      return new PickUpStrategy();
+    case DELIVERY_METHODS.PICKUP:
+      return new PickupStrategy();
     default:
-      return new EconomyDeliveryStrategy(); // Default strategy
+      // Mặc định là Economy nếu không xác định
+      return new EconomyDeliveryStrategy();
   }
 }
 
 module.exports = {
-  DeliveryStrategy,
-  FastDeliveryStrategy,
-  EconomyDeliveryStrategy,
-  PickUpStrategy,
   createDeliveryStrategy,
+  DELIVERY_METHODS,
 };

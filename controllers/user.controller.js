@@ -1,5 +1,7 @@
 const AccountDAO = require("../DAO/accountDAO");
 const { Account } = require("../models/account");
+const { Cart } = require("../models/cart");
+const AccountFactory = require("../factory method/accountFactory");
 module.exports.countByRole = async (req, res) => {
   const role = req.body.role;
   try {
@@ -24,26 +26,25 @@ module.exports.getUsers = async (req, res) => {
   }
 };
 module.exports.addUser = async (req, res) => {
-  try {
-    const userData = {
-      name: req.body.name,
-      email: req.body.email,
-      password: req.body.password,
-      address: req.body.address || "",
-      role: req.body.role || "Customer",
-    };
-    // console.log("User data:", userData);
-    const isExist = await AccountDAO.isExist(userData.email);
-    if (isExist) {
-      return res.status(500).json({ message: "Email has existed" });
-    } else {
-      const newAccount = new Account(userData);
-      await newAccount.save();
-      return res.status(201).json({ message: "Add user successfully" });
+    try {
+        const userData = req.body;
+        // console.log("User data:", userData);
+        const isExist = await AccountDAO.isExist(userData.email);
+        if (isExist) {
+            return res.status(500).json({ message: "Email has existed" });
+        } else {
+            const newAccount = AccountFactory.createUser(userData);
+            await newAccount.save();
+            const newCart = new Cart({
+                customerId: newAccount._id,
+                items: [], // Khởi tạo với mảng items rỗng
+            });
+            await newCart.save();
+            return res.status(201).json({ message: "Add user successfully" });
+        }
+    } catch (err) {
+        return res.status(500).json({ error: err.message });
     }
-  } catch (err) {
-    return res.status(500).json({ error: err.message });
-  }
 };
 module.exports.editUser = async (req, res) => {
   // console.log("Edit user data:", req.body);
