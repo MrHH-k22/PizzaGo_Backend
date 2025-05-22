@@ -1,4 +1,5 @@
 const { Account } = require("../models/account");
+const bcrypt = require("bcrypt");
 
 class AccountDAO {
   async isExist(email) {
@@ -22,7 +23,7 @@ class AccountDAO {
   async getUsers(role) {
     try {
       const query = role ? { role } : {};
-      const users = await Account.find(query)
+      const users = await Account.find(query);
       return users;
     } catch (error) {
       console.error("Error fetching users:", error);
@@ -56,6 +57,31 @@ class AccountDAO {
       return deletedAccount;
     } catch (error) {
       console.error("Error deleting user:", error);
+      throw error;
+    }
+  }
+
+  async getUserById(id) {
+    try {
+      const user = await Account.findById(id).select("-password");
+      return user;
+    } catch (error) {
+      console.error("Error fetching user by ID:", error);
+      throw error;
+    }
+  }
+
+  async changePassword(id, newPassword) {
+    try {
+      const hashedPassword = await bcrypt.hash(
+        newPassword,
+        parseInt(process.env.BCRYPT_SALT || "10")
+      );
+      await Account.findByIdAndUpdate(id, {
+        password: hashedPassword,
+      });
+    } catch (error) {
+      console.error("Error changing password:", error);
       throw error;
     }
   }
