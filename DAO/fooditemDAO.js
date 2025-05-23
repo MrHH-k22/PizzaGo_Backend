@@ -29,6 +29,16 @@ class FooditemDAO {
       throw error;
     }
   }
+  async addFoodItem(foodItemData) {
+    try {
+      // Tạo một món ăn mới
+      const newFoodItem = new FoodItem(foodItemData);
+      return await newFoodItem.save();
+    } catch (error) {
+      console.log(error);
+      throw error;
+    }
+  }
 }
 
 module.exports = new FooditemDAO();

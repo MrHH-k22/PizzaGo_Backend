@@ -104,11 +104,13 @@ async function sendMail(to, type, data) {
             <tr>
               <td>${item.foodItemId.name || "Pizza Item"}</td>
               <td>${item.quantity}</td>
+
               <td>${
                 item.foodItemId.price
                   ? `${item.foodItemId.price.toLocaleString()} VND`
                   : "N/A"
               }</td>
+
             </tr>
           `
             )
