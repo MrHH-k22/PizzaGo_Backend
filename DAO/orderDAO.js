@@ -78,6 +78,25 @@ class OrderDAO {
       throw error;
     }
   }
+
+  async getOrdersByCustomerId(customerId) {
+    try {
+      return await Order.find({ customerId })
+        .populate({
+          path: "customerId",
+          select: "name email", // Only include non-sensitive fields
+        })
+        .populate({
+          path: "items.foodItemId",
+          select: "name description price image",
+        })
+        .sort({ createdAt: -1 }) // Sort by newest first
+        .exec();
+    } catch (error) {
+      console.log(error);
+      throw error;
+    }
+  }
 }
 
 module.exports = new OrderDAO();
