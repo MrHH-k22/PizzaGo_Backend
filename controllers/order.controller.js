@@ -1,7 +1,8 @@
 const CartDAO = require("../DAO/CartDAO.js");
 const OrderDAO = require("../DAO/orderDAO.js");
+const { Account } = require("../models/account.js");
 const { Order } = require("../models/order.js");
-const OrderStatusSubject = require("../observers/OrderStatusSubject");
+const OrderStatusSubject = require("../patterns/observers/OrderStatusSubject.js");
 const { createDeliveryStrategy } = require("../patterns/strategy/index.js");
 
 // Tạo một instance của Subject để sử dụng trong controller
@@ -99,6 +100,35 @@ module.exports.createOrder = async (req, res) => {
     return res.status(201).json(savedOrder);
   } catch (err) {
     console.error("Error creating order:", err);
+    return res.status(500).json({ message: "Internal Server Error" });
+  }
+};
+
+// Add this function to the existing exports
+module.exports.getOrdersByCustomerId = async (req, res) => {
+  try {
+    const { customerId } = req.body;
+
+    // Validate input
+    if (!customerId) {
+      return res.status(400).json({ message: "Customer ID is required" });
+    }
+    const user = await Account.findById(customerId);
+    if (!user) {
+      return res.status(404).json({ message: "Customer not found" });
+    }
+
+    // Get orders from DAO
+    const orders = await OrderDAO.getOrdersByCustomerId(customerId);
+
+    if (orders && orders.length > 0) {
+      return res.status(200).json(orders);
+    }
+
+    // Return empty array instead of 404 for no orders
+    return res.status(200).json([]);
+  } catch (err) {
+    console.error("Error getting customer orders:", err);
     return res.status(500).json({ message: "Internal Server Error" });
   }
 };

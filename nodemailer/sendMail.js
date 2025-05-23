@@ -13,7 +13,6 @@ const transporter = nodemailer.createTransport({
 async function sendMail(to, type, data) {
   let subject = "Announcement from PizzaGo";
   let html = "";
-
   // Generate email content based on type
   switch (type) {
     case "order-status":
@@ -59,6 +58,15 @@ async function sendMail(to, type, data) {
           border-bottom: 1px solid #eee;
           text-align: left;
         }
+        .order-details {
+          background-color: #f9f9f9;
+          padding: 15px;
+          border-radius: 8px;
+          margin: 20px 0;
+        }
+        .order-details p {
+          margin: 8px 0;
+        }
         .footer {
           margin-top: 30px;
           text-align: center;
@@ -75,6 +83,14 @@ async function sendMail(to, type, data) {
         <div class="status-badge">${data.newStatus.toUpperCase()}</div>
         <p>${data.statusMessage}</p>
         
+        <div class="order-details">
+          <h3>Order Details:</h3>
+          <p><strong>Order ID:</strong> ${data.orderId}</p>
+          <p><strong>Delivery Address:</strong> ${data.deliveryAddress}</p>
+          <p><strong>Shipping Method:</strong> ${data.shippingMethod}</p>
+          ${data.note ? `<p><strong>Note:</strong> ${data.note}</p>` : ""}
+        </div>
+        
         <h3>Order Summary:</h3>
         <table class="items-table">
           <tr>
@@ -88,14 +104,26 @@ async function sendMail(to, type, data) {
             <tr>
               <td>${item.foodItemId.name || "Pizza Item"}</td>
               <td>${item.quantity}</td>
-              <td>$${item.price.toFixed(2)}</td>
+              <td>${
+                item.foodItemId.price
+                  ? `${item.foodItemId.price.toLocaleString()} VND`
+                  : "N/A"
+              }</td>
             </tr>
           `
             )
             .join("")}
           <tr>
+            <td colspan="2"><strong>Food Total:</strong></td>
+            <td><strong>${data.totalFoodPrice.toLocaleString()} VND</strong></td>
+          </tr>
+          <tr>
+            <td colspan="2"><strong>Shipping Cost:</strong></td>
+            <td><strong>${data.shippingCost.toLocaleString()} VND</strong></td>
+          </tr>
+          <tr>
             <td colspan="2"><strong>Total:</strong></td>
-            <td><strong>$${data.totalPrice.toFixed(2)}</strong></td>
+            <td><strong>${data.totalPrice.toLocaleString()} VND</strong></td>
           </tr>
         </table>
         
@@ -110,7 +138,7 @@ async function sendMail(to, type, data) {
     // Other email types can be added here
   }
 
-  // Actually send the email - this part was missing
+  // Send the email
   try {
     const info = await transporter.sendMail({
       from: `"PizzaGo" <${process.env.NODEMAILER_ACCOUNT}>`,

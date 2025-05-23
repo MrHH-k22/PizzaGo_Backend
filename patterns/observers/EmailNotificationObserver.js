@@ -1,6 +1,6 @@
 const OrderStatusObserver = require("./OrderStatusObserver");
-const sendMail = require("../nodemailer/sendMail");
-const { Account } = require("../models/account");
+const sendMail = require("../../nodemailer/sendMail");
+const { Account } = require("../../models/account");
 
 class EmailNotificationObserver extends OrderStatusObserver {
   async update(order, prevStatus) {
@@ -39,6 +39,11 @@ class EmailNotificationObserver extends OrderStatusObserver {
       statusMessage:
         statusMessages[order.status] || "Your order status has been updated.",
       totalPrice: order.totalPrice,
+      deliveryAddress: order.deliveryAddress,
+      shippingMethod: order.shippingMethod,
+      note: order.note,
+      totalFoodPrice: order.totalFoodPrice,
+      shippingCost: order.shippingCost,
     };
   }
 }
