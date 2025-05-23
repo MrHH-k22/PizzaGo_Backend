@@ -17,4 +17,8 @@ router
   .route("/create")
   .post(authMiddleware.isLogin, orderController.createOrder);
 
+router
+  .route("/getOrdersByCustomerId")
+  .post(authMiddleware.isLogin, orderController.getOrdersByCustomerId);
+
 module.exports = router;
