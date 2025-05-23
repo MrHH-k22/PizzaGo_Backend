@@ -31,3 +31,24 @@ module.exports.searchFoodItems = async (req, res, next) => {
     return res.status(500).json({ message: "Internal Server Error" });
   }
 };
+module.exports.addFoodItem = async (req, res, next) => {
+  try {
+    const { name, description, price, category } = req.body;
+    const image = req.file.filename;
+    if(!name || !description || !price || !category) {
+      return res.status(400).json({ message: "All fields are required" });
+    }
+    const foodItemData = {
+      name,
+      description,
+      price,
+      image,
+      category,
+    };
+    await FooditemDAO.addFoodItem(foodItemData);
+    return res.status(200).json({ message: "Food item added successfully" });
+    // console.log("foodItemData", foodItemData);
+  } catch (err) {
+    return res.status(500).json({ message: "Internal Server Error" });
+  }
+};

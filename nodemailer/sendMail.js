@@ -88,7 +88,7 @@ async function sendMail(to, type, data) {
             <tr>
               <td>${item.foodItemId.name || "Pizza Item"}</td>
               <td>${item.quantity}</td>
-              <td>$${item.price.toFixed(2)}</td>
+              <td>$${item.quantity * item.foodItemId.price}</td>
             </tr>
           `
             )
