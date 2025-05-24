@@ -9,4 +9,9 @@ router.route("/addFoodItem")
         upload.single("image"),
         fooditemController.addFoodItem
     );
+router.route("/editFoodItem").patch(
+    upload.single("image"),
+    fooditemController.editFoodItem
+);
+router.route("/deleteFoodItem").delete(fooditemController.deleteFoodItem);
 module.exports = router;
