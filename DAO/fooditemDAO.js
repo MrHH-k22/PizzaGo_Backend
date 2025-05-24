@@ -7,7 +7,6 @@ class FooditemDAO {
       // Sử dụng MongoDB để truy vấn dữ liệu và populate category
       return await FoodItem.find({}).populate("category").exec();
     } catch (error) {
-      console.log(error);
       throw error;
     }
   }
@@ -25,7 +24,6 @@ class FooditemDAO {
         .populate("category")
         .exec();
     } catch (error) {
-      console.log(error);
       throw error;
     }
   }
@@ -35,7 +33,35 @@ class FooditemDAO {
       const newFoodItem = new FoodItem(foodItemData);
       return await newFoodItem.save();
     } catch (error) {
+      throw error;
+    }
+  }
+  async editFoodItem(foodItemData, id) {
+    try {
+      // Cập nhật món ăn theo ID
+      const updatedFoodItem = await FoodItem.findByIdAndUpdate(id, foodItemData, {
+        new: true,
+      });
+      return updatedFoodItem;
+    } catch (error) {
       console.log(error);
+      throw error;
+    }
+  }
+  async getFoodItemById(id) {
+    try {
+      // Tìm món ăn theo ID
+      const foodItem = await FoodItem.findById(id);
+      return foodItem;
+    } catch (error) {
+      throw error;
+    }
+  }
+  async deleteFoodItem(id) {
+    try {
+      const deletedFoodItem = await FoodItem.findByIdAndDelete(id);
+      return deletedFoodItem;
+    } catch (error) {
       throw error;
     }
   }
