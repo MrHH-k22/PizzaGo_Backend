@@ -21,7 +21,7 @@ module.exports.generateAccessToken = (user) => {
   return jwt.sign(
     { id: user._id, email: user.email, role: user.role },
     process.env.JWT_ACCESS_SECRET || "access_secret_key",
-    { expiresIn: '15m' } // Short expiration for security
+    { expiresIn: '1d' } // Short expiration for security
   );
 };
 
