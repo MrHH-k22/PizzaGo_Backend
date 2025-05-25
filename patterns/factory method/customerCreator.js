@@ -1,5 +1,5 @@
 const AccountCreator = require('./accountCreator');
-const { Account } = require('../models/account');
+const { Account } = require('../../models/account');
 
 class CustomerCreator extends AccountCreator {
   _createSpecificUser(userData) {

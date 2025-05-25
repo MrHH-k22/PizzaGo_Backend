@@ -4,7 +4,7 @@ const CartDAO = require("../DAO/CartDAO");
 const AccountDAO = require("../DAO/accountDAO");
 const COOKIE_OPTIONS = require("../config/cookieOptions");
 const { generateAccessToken, generateRefreshToken } = require("../utils/utils");
-const AccountFactory = require("../factory method/accountFactory");
+const AccountFactory = require("../patterns/factory method/accountFactory");
 module.exports.signUp = async (req, res) => {
   try {
     const userData = req.body;
@@ -14,7 +14,7 @@ module.exports.signUp = async (req, res) => {
     } else {
       //b1: tạo tài khoản
       const newAccount = AccountFactory.createUser(userData);
-      await newAccount.save();
+      await AccountDAO.saveUser(newAccount);
       //b2: tạo giỏ hàng cho tài khoản
       const newCart = new Cart({
         customerId: newAccount._id,
