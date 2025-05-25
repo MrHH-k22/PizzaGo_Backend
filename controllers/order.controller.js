@@ -3,7 +3,6 @@ const OrderDAO = require("../DAO/orderDAO.js");
 const { Account } = require("../models/account.js");
 const { Order } = require("../models/order.js");
 const OrderStatusSubject = require("../patterns/observers/OrderStatusSubject.js");
-const { createDeliveryStrategy } = require("../patterns/strategy/index.js");
 
 // Tạo một instance của Subject để sử dụng trong controller
 const statusSubject = new OrderStatusSubject();
