@@ -36,6 +36,15 @@ class CartDAO {
       throw error;
     }
   }
+  async deleteCart(customerId) {
+    try {
+      const deletedCart = await Cart.findOneAndDelete({ customerId });
+      return deletedCart;
+    } catch (error) {
+      console.error("Error deleting cart:", error);
+      throw error;
+    }
+  }
 }
 
 module.exports = new CartDAO();

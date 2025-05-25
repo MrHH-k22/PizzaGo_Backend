@@ -11,6 +11,14 @@ class CategoryDAO {
       throw error;
     }
   }
+  async getPizzaCategory() {
+    try {
+      return await Category.findOne({ name: "pizza" }).exec();
+    } catch (error) {
+      console.log(error);
+      throw error;
+    }
+  }
 }
 
 module.exports = new CategoryDAO();

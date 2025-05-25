@@ -1,45 +1,40 @@
 const AccountDAO = require("../DAO/accountDAO");
 const { Account } = require("../models/account");
 const { Cart } = require("../models/cart");
-const AccountFactory = require("../factory method/accountFactory");
+const CartDAO = require("../DAO/CartDAO");
+const AccountFactory = require("../patterns/factory method/accountFactory");
 module.exports.countByRole = async (req, res) => {
   const role = req.body.role;
   try {
     const count = await AccountDAO.countByRole(role);
-    // console.log("Count by role:", count);
     return res.status(200).json(count);
   } catch (err) {
-    // console.error("Count by role error:", err);
     return res.status(500).json({ error: err.message });
   }
 };
 module.exports.getUsers = async (req, res) => {
   const { role } = req.body;
-  // console.log(role, itemsPerPage, offset);
   try {
     const users = await AccountDAO.getUsers(role);
-    // console.log("Users:", users);
     return res.status(200).json(users);
   } catch (err) {
-    // console.error("Get users error:", err);
     return res.status(500).json({ error: err.message });
   }
 };
 module.exports.addUser = async (req, res) => {
     try {
         const userData = req.body;
-        // console.log("User data:", userData);
         const isExist = await AccountDAO.isExist(userData.email);
         if (isExist) {
             return res.status(500).json({ message: "Email has existed" });
         } else {
             const newAccount = AccountFactory.createUser(userData);
-            await newAccount.save();
+            await AccountDAO.saveUser(newAccount);
             const newCart = new Cart({
                 customerId: newAccount._id,
-                items: [], // Khởi tạo với mảng items rỗng
+                items: [], 
             });
-            await newCart.save();
+            await CartDAO.saveCart(newCart);
             return res.status(201).json({ message: "Add user successfully" });
         }
     } catch (err) {
@@ -72,12 +67,15 @@ module.exports.editUser = async (req, res) => {
   }
 };
 module.exports.deleteUser = async (req, res) => {
-  // console.log("Delete user data:", req.body.userId);
   try {
     const userId = req.body.userId;
+    const deleteCart = await CartDAO.deleteCart(userId);
     const deletedAccount = await AccountDAO.deleteUser(userId);
     if (!deletedAccount) {
       return res.status(404).json({ message: "User not found" });
+    }
+    if (!deleteCart) {
+      return res.status(404).json({ message: "Cart not found" });
     }
     return res.status(200).json({ message: "Delete user successfully" });
   } catch (err) {

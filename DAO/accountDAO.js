@@ -60,7 +60,6 @@ class AccountDAO {
       throw error;
     }
   }
-
   async getUserById(id) {
     try {
       const user = await Account.findById(id).select("-password");
@@ -70,7 +69,6 @@ class AccountDAO {
       throw error;
     }
   }
-
   async changePassword(id, newPassword) {
     try {
       const hashedPassword = await bcrypt.hash(
@@ -82,6 +80,15 @@ class AccountDAO {
       });
     } catch (error) {
       console.error("Error changing password:", error);
+      throw error;
+    }
+  }
+  async saveUser(user) {
+    try {
+      await user.save();
+      return user;
+    } catch (error) {
+      console.error("Error saving user:", error);
       throw error;
     }
   }
