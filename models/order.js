@@ -71,6 +71,9 @@ orderSchema.statics.createOrder = function (orderData) {
   const totalFoodPrice = orderData.items.reduce((sum, item) => {
     return sum + item.price * item.quantity;
   }, 0);
+  const totalQuantity = orderData.items.reduce((sum, item) => {
+    return sum + item.quantity;
+  }, 0);
 
   // Create DeliveryContext with the selected shipping method
   const deliveryFactory = new DeliveryFactory();
@@ -84,7 +87,7 @@ orderSchema.statics.createOrder = function (orderData) {
 
   // calculate shipping cost using the strategy pattern
   const shippingCost = deliveryContext.calculateShippingCost(
-    orderData.items,
+    totalQuantity,
     totalFoodPrice
   );
 

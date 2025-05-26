@@ -1,7 +1,7 @@
 const DeliveryStrategy = require("./DeliveryStrategy");
 
 class PickupStrategy extends DeliveryStrategy {
-  calculateShippingCost(items, totalFoodPrice) {
+  calculateShippingCost(totalQuantity, totalFoodPrice) {
     return 0;
   }
 }

@@ -1,5 +1,5 @@
 class DeliveryStrategy {
-  calculateShippingCost(items, totalFoodPrice) {
+  calculateShippingCost(totalQuantity, totalFoodPrice) {
     throw new Error("Method must be implemented by concrete strategies");
   }
 }

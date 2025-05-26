@@ -7,11 +7,14 @@ class DeliveryContext {
     this.deliveryStrategy = strategy;
   }
 
-  calculateShippingCost(items, totalFoodPrice) {
+  calculateShippingCost(totalQuantity, totalFoodPrice) {
     if (!this.deliveryStrategy) {
       throw new Error("Delivery strategy not set");
     }
-    return this.deliveryStrategy.calculateShippingCost(items, totalFoodPrice);
+    return this.deliveryStrategy.calculateShippingCost(
+      totalQuantity,
+      totalFoodPrice
+    );
   }
 }
 
