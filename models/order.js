@@ -72,16 +72,15 @@ orderSchema.statics.createOrder = function (orderData) {
     return sum + item.price * item.quantity;
   }, 0);
 
-  // Tạo DeliveryContext với phương thức giao hàng
+  // Create DeliveryContext with the selected shipping method
   const deliveryContext = new DeliveryContext(orderData.shippingMethod);
 
-  // Tính phí vận chuyển thông qua context
+  // calculate shipping cost using the strategy pattern
   const shippingCost = deliveryContext.calculateShippingCost(
     orderData.items,
     totalFoodPrice
   );
 
-  // Tạo và return order instance
   return new this({
     customerId: orderData.customerId,
     deliveryAddress: orderData.deliveryAddress,

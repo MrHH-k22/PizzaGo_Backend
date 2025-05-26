@@ -8,9 +8,9 @@ class EconomyDeliveryStrategy extends DeliveryStrategy {
 
     // Áp dụng quy tắc tính phí Economy Delivery
     if (totalQuantity > 6) {
-      return totalFoodPrice * 0.15; // 15% giá đồ ăn
-    } else {
       return totalFoodPrice * 0.1; // 10% giá đồ ăn
+    } else {
+      return totalFoodPrice * 0.05; // 5% giá đồ ăn
     }
   }
 }

@@ -46,28 +46,34 @@ module.exports.addFoodItem = async (req, res, next) => {
       description: req.body.description,
       price: req.body.price,
       category: req.body.category,
-    }
-    const image = req.file ? req.file.filename : null; 
-    if (!formData.name || !formData.description || !formData.price || !formData.category) {
+    };
+    const image = req.file ? req.file.filename : null;
+    if (
+      !formData.name ||
+      !formData.description ||
+      !formData.price ||
+      !formData.category
+    ) {
       return res.status(400).json({ message: "All fields are required" });
     }
     if (image) {
-      formData.image = image; 
+      formData.image = image;
     }
     const pizzaCategory = await CategoryDAO.getPizzaCategory();
-    if(formData.category === pizzaCategory._id.toString()) {
+    if (formData.category === pizzaCategory._id.toString()) {
       const pizzaData = pizzaDirector.buildCustomPizza({
         ...formData,
         pizzaBase: req.body.pizzaBase,
         sauce: req.body.sauce,
         toppings: req.body.toppings,
-        vegetables: req.body.vegetables
+        vegetables: req.body.vegetables,
       });
-      
+
+      console.log("Pizza Data:", pizzaData);
+
       await PizzaDAO.addPizza(pizzaData);
       return res.status(200).json({ message: "Pizza item added successfully" });
-    }
-    else {
+    } else {
       // Nếu không phải là pizza, thêm món ăn thông thường
       await FooditemDAO.addFoodItem(formData);
       return res.status(200).json({ message: "Food item added successfully" });
@@ -81,7 +87,7 @@ module.exports.editFoodItem = async (req, res, next) => {
     const _id = req.body._id;
     const image = req.file ? req.file.filename : null; // Kiểm tra xem có file hình ảnh không
     const foodItemData = {
-      name : req.body.name,
+      name: req.body.name,
       description: req.body.description,
       price: req.body.price,
       category: req.body.category,
@@ -94,22 +100,29 @@ module.exports.editFoodItem = async (req, res, next) => {
       foodItemData.image = image;
     }
     const pizzaCategory = await CategoryDAO.getPizzaCategory();
-    if(foodItemData.category === pizzaCategory._id.toString()) {
+    if (foodItemData.category === pizzaCategory._id.toString()) {
       foodItemData.pizzaBase = req.body.pizzaBase;
       foodItemData.sauce = req.body.sauce;
-      foodItemData.toppings = req.body.toppings ? req.body.toppings.split(',') : [];
-      foodItemData.vegetables = req.body.vegetables ? req.body.vegetables.split(',') : [];
+      foodItemData.toppings = req.body.toppings
+        ? req.body.toppings.split(",")
+        : [];
+      foodItemData.vegetables = req.body.vegetables
+        ? req.body.vegetables.split(",")
+        : [];
       await PizzaDAO.editPizza(foodItemData, _id);
-      return res.status(200).json({ message: "Pizza item updated successfully" });
-    }
-    else {
+      return res
+        .status(200)
+        .json({ message: "Pizza item updated successfully" });
+    } else {
       await FooditemDAO.editFoodItem(foodItemData, _id);
-      return res.status(200).json({ message: "Food item updated successfully" });
+      return res
+        .status(200)
+        .json({ message: "Food item updated successfully" });
     }
   } catch (err) {
     return res.status(500).json({ message: "Internal Server Error" });
   }
-}
+};
 module.exports.deleteFoodItem = async (req, res, next) => {
   try {
     const _id = req.body.itemId;

@@ -8,9 +8,9 @@ class FastDeliveryStrategy extends DeliveryStrategy {
 
     // Áp dụng quy tắc tính phí Fast Delivery
     if (totalQuantity > 6) {
-      return totalFoodPrice * 0.25; // 25% giá đồ ăn
-    } else {
       return totalFoodPrice * 0.2; // 20% giá đồ ăn
+    } else {
+      return totalFoodPrice * 0.15; // 15% giá đồ ăn
     }
   }
 }

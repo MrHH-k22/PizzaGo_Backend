@@ -1,4 +1,3 @@
-// patterns/strategy/index.js
 const FastDeliveryStrategy = require("./FastDeliveryStrategy");
 const EconomyDeliveryStrategy = require("./EconomyDeliveryStrategy");
 const PickupStrategy = require("./PickUpStrategy");
