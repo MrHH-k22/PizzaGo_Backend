@@ -3,10 +3,19 @@ require("dotenv").config();
 
 class Database {
   constructor() {
-    this.connect();
+    if (Database.instance) {
+      throw new Error("Database singleton already exists! Use getInstance()");
+    }
+    Database.instance = this;
   }
 
-  // Phương thức kết nối đến MongoDB
+  static getInstance() {
+    if (!Database.instance) {
+      Database.instance = new Database();
+    }
+    return Database.instance;
+  }
+
   connect() {
     if (this.connection) return this.connection;
 
@@ -24,14 +33,11 @@ class Database {
     return this.connection;
   }
 
-  // Phương thức lấy connection
   getConnection() {
     return this.connection;
   }
 }
 
-// Tạo một thể hiện duy nhất và export
-const instance = new Database();
-Object.freeze(instance);
+Database.instance = null;
 
-module.exports = instance;
+module.exports = Database;

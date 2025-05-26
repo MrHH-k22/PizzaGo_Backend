@@ -75,7 +75,7 @@ orderSchema.statics.createOrder = function (orderData) {
     return sum + item.quantity;
   }, 0);
 
-  // Create DeliveryContext with the selected shipping method
+  // Create a delivery factory instance
   const deliveryFactory = new DeliveryFactory();
 
   // Get the strategy from the factory

@@ -1,5 +1,4 @@
 const express = require("express");
-const database = require("./config/db");
 const fooditemRoute = require("./routes/fooditem.route.js");
 const authRoute = require("./routes/auth.route.js");
 const categoryRoute = require("./routes/category.route.js");
@@ -15,6 +14,11 @@ const cors = require("cors");
 const path = require("path");
 
 const PORT = process.env.PORT || 5000;
+
+const Database = require("./config/db");
+
+const dbInstance = Database.getInstance();
+dbInstance.connect();
 
 app.use(cookieParser());
 
