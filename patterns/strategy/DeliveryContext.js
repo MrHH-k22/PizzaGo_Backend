@@ -1,8 +1,10 @@
-const { createDeliveryStrategy } = require("./");
-
 class DeliveryContext {
-  constructor(deliveryMethod) {
-    this.deliveryStrategy = createDeliveryStrategy(deliveryMethod);
+  constructor() {
+    this.deliveryStrategy = null;
+  }
+
+  setDeliveryStrategy(strategy) {
+    this.deliveryStrategy = strategy;
   }
 
   calculateShippingCost(items, totalFoodPrice) {

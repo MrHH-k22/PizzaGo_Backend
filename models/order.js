@@ -3,6 +3,7 @@ const mongoose = require("mongoose");
 const { Schema } = mongoose;
 const cartItemSchema = require("./cartItem");
 const DeliveryContext = require("../patterns/strategy/DeliveryContext");
+const { DeliveryFactory } = require("../patterns/strategy/deliveryFactory");
 
 // Define Order Status enum according to the diagram
 const EStatus = {
@@ -67,13 +68,19 @@ const orderSchema = new Schema(
 );
 
 orderSchema.statics.createOrder = function (orderData) {
-  // Tính tổng giá đồ ăn
   const totalFoodPrice = orderData.items.reduce((sum, item) => {
     return sum + item.price * item.quantity;
   }, 0);
 
   // Create DeliveryContext with the selected shipping method
-  const deliveryContext = new DeliveryContext(orderData.shippingMethod);
+  const deliveryFactory = new DeliveryFactory();
+
+  // Get the strategy from the factory
+  const strategy = deliveryFactory.getDelivery(orderData.shippingMethod);
+
+  // Create a DeliveryContext and set the strategy
+  const deliveryContext = new DeliveryContext();
+  deliveryContext.setDeliveryStrategy(strategy);
 
   // calculate shipping cost using the strategy pattern
   const shippingCost = deliveryContext.calculateShippingCost(
